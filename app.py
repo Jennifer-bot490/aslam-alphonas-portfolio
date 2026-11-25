@@ -1,3 +1,10 @@
+"""Flask server for the portfolio (Render-ready).
+
+Serves the production build from the `dist/` folder.
+Build the site first:  npm install && npm run build
+Run locally:           python app.py   ->  http://localhost:5000
+Production (Render):   gunicorn app:app --bind 0.0.0.0:$PORT
+"""
 import os
 
 from flask import Flask, abort, jsonify, send_from_directory
@@ -11,11 +18,13 @@ app = Flask(__name__, static_folder=None)
 
 @app.get("/healthz")
 def healthz():
+    """Health check used by Render."""
     return jsonify(status="ok", build_found=os.path.isdir(DIST_DIR))
 
 
 @app.after_request
 def add_headers(resp):
+    """Cache hashed build assets for a year; never cache the HTML page."""
     path = getattr(resp, "_asset_path", "")
     if path.startswith("assets/"):
         resp.headers["Cache-Control"] = "public, max-age=31536000, immutable"
@@ -37,14 +46,17 @@ def _file(path):
 @app.route("/<path:path>")
 def serve(path):
     if not os.path.isdir(DIST_DIR):
-        return "Build not found. Run 'npm install && npm run build' first.", 500
+        return (
+            "Build not found. Run 'npm install && npm run build' first, then restart this server.",
+            500,
+        )
     safe = safe_join(DIST_DIR, path) if path else None
     if path and safe is None:
-        abort(404)
+        abort(404)  # blocks ../ path traversal
     if safe and os.path.isfile(safe):
         return _file(path)
     if path and "." in os.path.basename(path):
-        abort(404)
+        abort(404)  # missing asset (js, css, png...), not a page route
     return _file("index.html")
 
 

@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: aslam-portfolio
+    runtime: python
+    plan: free
+    buildCommand: npm install && npm run build && pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT --workers 2
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.3
+      - key: NODE_VERSION
+        value: 20.18.0

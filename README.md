@@ -41,7 +41,16 @@ python app.py        # http://localhost:5000
 ```
 
 ### Deploy app.py on Render (Web Service)
-1. Push to GitHub, then choose New > Web Service on https://render.com.
-2. Runtime: Python 3.
-3. Build command: `npm install && npm run build && pip install -r requirements.txt`
-4. Start command: `gunicorn app:app`
+**Easiest: Blueprint (uses `render.yaml`)**
+1. Push the project to a GitHub repository (do not upload `node_modules` or `dist`; `.gitignore` already skips them).
+2. On https://render.com choose New > Blueprint, connect the repo and click Apply.
+
+**Manual setup**
+1. New > Web Service, connect the repo, Runtime: Python 3.
+2. Build command: `npm install && npm run build && pip install -r requirements.txt`
+3. Start command: `gunicorn app:app --bind 0.0.0.0:$PORT --workers 2`
+4. Health check path: `/healthz`
+5. Environment variables: `PYTHON_VERSION` = `3.12.3`, `NODE_VERSION` = `20.18.0`
+6. Click Create Web Service. The free plan sleeps when idle, so the first visit can take about 30-60 seconds.
+
+Note: `.vercelignore` stops Vercel from treating `app.py` as a Python app. Vercel only needs the React site.
