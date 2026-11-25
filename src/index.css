@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+body { @apply bg-navy-900 text-white font-sans antialiased; }
+:focus-visible { outline: 2px solid #2dd4bf; outline-offset: 3px; border-radius: 6px; }
+
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(45,212,191,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(45,212,191,.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 70% 40%, #000 20%, transparent 75%);
+}
+.card { @apply rounded-2xl border border-white/10 bg-navy-800/70 shadow-xl shadow-black/30 backdrop-blur transition duration-300; }
+.card-hover:hover { @apply -translate-y-1 border-teal/50 shadow-teal/10; }
+.eq-bar { transform-origin: bottom; animation: eq 1.6s ease-in-out infinite; }
+@keyframes eq { 0%,100% { transform: scaleY(.25); } 50% { transform: scaleY(1); } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .eq-bar { animation: none; transform: scaleY(.6); }
+  * { transition-duration: .01ms !important; }
+}
+
+/* Hero pointer spotlight */
+.spotlight::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx, 70%) var(--my, 30%), rgba(45,212,191,.12), transparent 60%);
+}
+/* Button light sweep */
+.shine { position: relative; overflow: hidden; display: inline-block; }
+.shine::after {
+  content: ''; position: absolute; top: 0; left: -75%; width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,.55), transparent);
+  transform: skewX(-20deg); transition: left .6s ease;
+}
+.shine:hover::after { left: 130%; }
+@media (prefers-reduced-motion: reduce) { .animate-ping, .animate-bounce { animation: none; } }
